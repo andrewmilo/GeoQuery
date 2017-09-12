@@ -14,13 +14,10 @@ except pymongo.errors.ConnectionFailure, e:
 db = client.asdf
 collections = db.det
 
-emails = []
-for collection in collections.find():
-    emails.append(collection['email'])
+print total_requests( collections )
 
-    #for entry in str(collection).split(','):
-    #    print entry
-    #print "ENDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd\n"
+print get_organizations( collections )
 
-for email in get_unique(emails):
-    print get_frequency('email', email, collections.find())
+print get_emails( collections )
+
+print get_collections( collections )
