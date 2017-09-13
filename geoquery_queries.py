@@ -120,7 +120,7 @@ def get_boundary_request_info( dbcollections, boundary ):
                 info = field['title']
                 infokv[ info ] = infokv.get( info, 0 ) + 1 # count number of times this info has been requested
                 
-                #return years
+                #return years with number of times requested in those years
     
     ret.append( count )
     ret.append( infokv )
