@@ -20,7 +20,7 @@ def compress( dataset ):
     return set( dataset )
 
 def get_frequency( field, value, collections ):
-    """Get frequency of a field value from a list of collections.
+    """Get frequency of a field value from requests.
     
     Args:
         field: field to identify.
@@ -37,6 +37,13 @@ def get_frequency( field, value, collections ):
     return count
 
 def get_emails( dbcollections ):
+    """Get emails from requests.
+    
+    Args:
+        dbcollections: all collections from database.
+    Returns:
+        list of emails
+    """
     emails = []
     
     for collection in dbcollections.find():
@@ -45,10 +52,23 @@ def get_emails( dbcollections ):
     return emails
 
 def total_requests( dbcollections ):
+    """Get total number of requests from the requests.
+    
+    Args:
+        dbcollections: all collections from database.
+    Returns:
+        number of requests
+    """
     return dbcollections.count()
 
 def get_organizations( dbcollections ):
-
+    """Get organizations from the requests.
+    
+    Args:
+        dbcollections: all collections from database.
+    Returns:
+        list of organizations
+    """
     orgs = set()
     blacklist = ['gmail.com', 'yahoo.com', 'hotmail.com']
 
@@ -60,4 +80,50 @@ def get_organizations( dbcollections ):
     return orgs
 
 def get_collections( dbcollections ):
+    """Get collections from database.
+    
+    Args:
+        dbcollections: all collections from database.
+    Returns:
+        list of collections
+    """
     return dbcollections.find()
+def get_boundaries( dbcollections ):
+    """Get all boundaries from the requests.
+    
+    Args:
+        dbcollections: all collections from database.
+    Returns:
+        list of boundaries
+    """
+    ret = []
+    for collection in dbcollections.find():
+        ret.append(collection['boundary']['title'])
+    return ret
+
+def get_boundary_request_info( dbcollections, boundary ):
+    """Get request information for a boundary.
+    
+    Args:
+        dbcollections: all collections from database.
+        boundary: country/region
+    Returns:
+        list containing (# of times the boundary has been requested, map of {info requested about boundary, # of times this info was requested}).
+    """
+    ret = []
+    count = 0
+    infokv = {}
+    for collection in dbcollections.find():
+        if collection['boundary']['title'].split(' ')[0] == boundary:
+            count += 1
+            for field in collection['raster_data']:
+                info = field['title']
+                infokv[ info ] = infokv.get( info, 0 ) + 1 # count number of times this info has been requested
+                
+                #return years
+    
+    ret.append( count )
+    ret.append( infokv )
+
+    return ret
+    
