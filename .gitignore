@@ -1,2 +1,6 @@
 data.txt
+<<<<<<< HEAD
 geoquery_requests.pyc
+=======
+geoquery_requests.pyc
+>>>>>>> 53595eed654d252c7326db14f6e5a79780b59aef
