@@ -1,10 +1,6 @@
 #!/usr/bin/python2.7
-
-print "Content-type: text/html\n\n"
-print "sdsf"
-
 import pymongo
-import cgitb
+
 import re
 
 from pymongo import MongoClient
@@ -15,8 +11,6 @@ try:
     print "\n**Connected successfully.**\n"
 except pymongo.errors.ConnectionFailure, e:
     print "Could not connect: %s" % e
-
-cgitb.enable()
 
 db = client.asdf
 collections = db.det
@@ -36,6 +30,9 @@ collections = db.det
 # for collection in collections.find():
 #     print collection
 #     raw_input()
+def application(env, start_response):
+    start_response('200 OK', [('Content-Type','text/html')])
+    return str(raster_options())
 
 # are they asking for ONLY count? what options are involved with count? is count also always with sum?
 def raster_options():
@@ -67,6 +64,7 @@ def raster_options():
                         else:
                             count_with_others_no_sum += 1
 
+    return (count,only_count,count_with_sum, count_with_others, count_with_others_no_sum)
     print count
     print "Requests"
     print "Only Count: %s" % only_count
@@ -74,7 +72,7 @@ def raster_options():
     print "Count with others (sum included): %s" % count_with_others
     print "count with others (no sum) %s" % count_with_others_no_sum
 
-print raster_options()
+#print raster_options()
 
 def get_count_requests():
     count = 0  
