@@ -126,4 +126,3 @@ def get_boundary_request_info( dbcollections, boundary ):
     ret.append( infokv )
 
     return ret
-    
