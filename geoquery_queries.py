@@ -1,3 +1,7 @@
+#!/usr/bin/python2.7
+
+"""geoquery_queries.py: Queries for the GeoQuery Requests Web Application."""
+
 def get_field(field, document):
     """Get a field from a document.
     
@@ -52,6 +56,13 @@ def get_emails(requests):
     return emails
 
 def unique_users(requests):
+    """Get emails from requests. 
+    
+    Args:
+        requests: all requests from database.
+    Returns:
+        list of unique users.
+    """
     uniq = set()
     for request in requests.find():
         email = str(request['email']).lower()
@@ -70,6 +81,13 @@ def total_requests(requests):
     return requests.count()
 
 def requests_per_user(requests):
+    """Get amount of requests submitted per user. 
+    
+    Args:
+        requests: all requests from database.
+    Returns:
+        count of requests per user
+    """
     kv = {}
 
     for request in requests.find():
@@ -79,7 +97,13 @@ def requests_per_user(requests):
     return kv
 
 def selections_per_user_request(requests):
-
+    """Get amount of selected datasets per user. 
+    
+    Args:
+        requests: all requests from database.
+    Returns:
+        total selection made by each user
+    """
     sel = {}
     for request in requests.find():
         email = str(request['email']).lower()
@@ -116,7 +140,14 @@ def get_requests(requests):
     """
     return requests.find()
 
-def most_common_boundaries(requests):
+def get_boundary_count(requests):
+    """Get count of boundaries. 
+    
+    Args:
+        requests: all requests from database.
+    Returns:
+        boundaries are their frequency
+    """
     boundaries = {}
     for request in requests.find():
         boundary = request['boundary']['title']
