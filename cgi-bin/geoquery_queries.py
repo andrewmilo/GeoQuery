@@ -1,4 +1,4 @@
-def get_field( field, document ):
+def get_field(field, document):
     """Get a field from a document.
     
     Args:
@@ -9,7 +9,7 @@ def get_field( field, document ):
     """
     return document[field]
 
-def compress( dataset ):
+def compress(dataset):
     """Compress values to 1 of each.
     
     Args:
@@ -17,95 +17,131 @@ def compress( dataset ):
     Returns:
         set with 1 of each value.
     """
-    return set( dataset )
+    return set(dataset)
 
-def get_frequency( field, value, collections ):
+def get_frequency(field, value, requests):
     """Get frequency of a field value from requests.
     
     Args:
         field: field to identify.
         value: sought after value of field.
-        collections: list of collections.
+        requests: list of requests.
     Returns:
         count of the occurence of the value.
     """
     count = 0
-    for collection in collections:
-        if collection[field] == value:
+    for request in requests:
+        if request[field] == value:
             count += 1
     
     return count
 
-def get_emails( dbcollections ):
-    """Get emails from requests.
+def get_emails(requests):
+    """Get emails from requests. 
     
     Args:
-        dbcollections: all collections from database.
+        requests: all requests from database.
     Returns:
-        list of emails
+        list of emails - not guaranteed to be a unique list.
     """
     emails = []
     
-    for collection in dbcollections.find():
-        emails.append( collection['email'])
+    for request in requests.find():
+        emails.append(request['email'])
 
     return emails
 
-def total_requests( dbcollections ):
+def unique_users(requests):
+    uniq = set()
+    for request in requests.find():
+        email = str(request['email']).lower()
+        uniq.add(email)
+    
+    return uniq
+
+def total_requests(requests):
     """Get total number of requests from the requests.
     
     Args:
-        dbcollections: all collections from database.
+        requests: all requests from database.
     Returns:
         number of requests
     """
-    return dbcollections.count()
+    return requests.count()
 
-def get_organizations( dbcollections ):
+def requests_per_user(requests):
+    kv = {}
+
+    for request in requests.find():
+        email = str(request['email']).lower() # doesn't consider unicode comparison
+        kv[email] = kv.get(email, 0) + 1
+    
+    return kv
+
+def selections_per_user_request(requests):
+
+    sel = {}
+    for request in requests.find():
+        email = str(request['email']).lower()
+        raster_data = request['raster_data']
+        sel[email] = sel.get(email, 0) + len(raster_data)
+    
+    return sel
+
+def get_organizations(requests):
     """Get organizations from the requests.
     
     Args:
-        dbcollections: all collections from database.
+        requests: all requests from database.
     Returns:
         list of organizations
     """
     orgs = set()
     blacklist = ['gmail.com', 'yahoo.com', 'hotmail.com']
 
-    for collection in dbcollections.find():
-        org = str(collection['email']).split('@')[1]
+    for request in requests.find():
+        org = str(request['email']).split('@')[1]
         if org.lower() not in blacklist:
             orgs.add( org )
     
     return orgs
 
-def get_collections( dbcollections ):
-    """Get collections from database.
+def get_requests(requests):
+    """Get requests from database.
     
     Args:
-        dbcollections: all collections from database.
+        requests: all requests from database.
     Returns:
-        list of collections
+        list of requests
     """
-    return dbcollections.find()
-def get_boundaries( dbcollections ):
+    return requests.find()
+
+def most_common_boundaries(requests):
+    boundaries = {}
+    for request in requests.find():
+        boundary = request['boundary']['title']
+        boundaries[boundary] = boundaries.get(boundary,0) + 1
+
+    return boundaries
+
+def get_boundaries(requests):
     """Get all boundaries from the requests.
     
     Args:
-        dbcollections: all collections from database.
+        requests: all requests from database.
     Returns:
         list of boundaries
     """
     ret = []
-    for collection in dbcollections.find():
-        ret.append(collection['boundary']['title'])
+    for request in requests.find():
+        ret.append(request['boundary']['title'])
     return ret
 
-def get_boundary_request_info( dbcollections, boundary ):
+def get_boundary_request_info(requests, boundary):
     """Get request information for a boundary.
     
     Args:
-        dbcollections: all collections from database.
+        requests: all requests from database.
         boundary: country/region
     Returns:
         list containing (# of times the boundary has been requested, map of {info requested about boundary, # of times this info was requested}).
@@ -113,16 +149,16 @@ def get_boundary_request_info( dbcollections, boundary ):
     ret = []
     count = 0
     infokv = {}
-    for collection in dbcollections.find():
-        if collection['boundary']['title'].split(' ')[0] == boundary:
+    for request in requests.find():
+        if request['boundary']['title'].split(' ')[0] == boundary:
             count += 1
-            for field in collection['raster_data']:
+            for field in request['raster_data']:
                 info = field['title']
                 infokv[ info ] = infokv.get( info, 0 ) + 1 # count number of times this info has been requested
                 
                 #return years with number of times requested in those years
     
-    ret.append( count )
-    ret.append( infokv )
+    ret.append(count)
+    ret.append(infokv)
 
     return ret

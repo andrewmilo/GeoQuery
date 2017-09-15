@@ -13,23 +13,33 @@ except pymongo.errors.ConnectionFailure, e:
     print "Could not connect: %s" % e
 
 db = client.asdf
-collections = db.det
+requests = db.det
+data = db.data
 
-#print total_requests( collections )
+#print total_requests( requests )
 
-#print get_organizations( collections )
+#print get_organizations( requests )
 
-#print get_emails( collections )
+#print get_emails( requests )
 
-#print get_collections( collections )
+#print get_requests( requests )
 
-#print get_boundaries( collections )
+#print get_boundaries( requests )
 
-#print get_boundary_request_info( collections, 'Myanmar')
+#print get_boundary_request_info( requests, 'Myanmar')
 
-# for collection in collections.find():
-#     print collection
-#     raw_input()
+# for k, v in selections_per_user_request( requests ).iteritems():
+#     print "{0} : {1}".format(k, v) 
+
+for request in requests.find():
+    print request
+    print "\n\n\n"
+    raw_input()
+
+# for dataset in data.find():
+#     print dataset
+#     print "\n\n"
+
 def application(env, start_response):
     start_response('200 OK', [('Content-Type','text/html')])
     return str(raster_options())
@@ -43,8 +53,8 @@ def raster_options():
     count_with_others=0
     count_with_others_no_sum=0
 
-    for collection in collections.find():
-        raster_data = collection['raster_data']
+    for request in requests.find():
+        raster_data = request['raster_data']
 
         for data in raster_data:
             options = data['options']['extract_types']
@@ -80,15 +90,15 @@ def get_count_requests():
     s = set()
     kv = {} # {user, # of times they asked for 'count'}
     count = 0
-    for collection in collections.find():
+    for request in requests.find():
 
-        email = collection['email']
-        raster_data = collection['raster_data']
+        email = request['email']
+        raster_data = request['raster_data']
 
         for data in raster_data:
             if 'count' in data['options']['extract_types']:
             #if len( data['options']['extract_types'] ) == 1 and data['options']['extract_types'][0] == 'count': #sole extract type
-                release_data = collection['release_data']
+                release_data = request['release_data']
                 s.add( email.lower() ) # count unique users
                 count += 1 # count number of 'count' requests
 
