@@ -3,6 +3,7 @@
 """geoquery_requests.py: Source file for the GeoQuery Requests Web Application."""
 
 import pymongo
+import json
 
 from pymongo import MongoClient
 from geoquery_queries import *  
@@ -17,6 +18,7 @@ db = client.asdf
 requests = db.det
 data = db.data
 
-def application(env, start_response):
-    start_response('200 OK', [('Content-Type','text/html')])
-    return 'sds'
+for d in data.find():
+    name = d.get('name')
+    if name == "dist_to_groads":
+        print d

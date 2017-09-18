@@ -26,7 +26,6 @@ count_1 = {} # only count selected with some other options available
 
 TOTAL_OPTIONS = 5
 
-#for x in requests.find({'raster_data.options.extract_types': 'count'}):
 for request in requests.find():
     raster_data = request['raster_data']
     
@@ -43,9 +42,6 @@ for request in requests.find():
                 
                 if len(extract_types) == 1: # only 'count' selected
                     if len(options) > 1:
-                        # if len(options) == TOTAL_OPTIONS: # all options available
-                        #     count_2[name] = count_2.get(name, 0) + 1
-                        # else: # at least 1 or more options available
                         count_1[name] = count_1.get(name, 0) + 1
                 elif len(extract_types) > 1: # if more than just 'count' selected
                     if len(extract_types) == len(options): # all options selected
