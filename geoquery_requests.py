@@ -4,6 +4,7 @@
 
 import pymongo
 import json
+import re
 
 from pymongo import MongoClient
 from geoquery_queries import GeoQueryRequests
@@ -20,16 +21,33 @@ data = db.data
 
 rq = GeoQueryRequests(requests)
 
-children = []
+json_file = {'name': 'flare', 'children': []}
+name = "flare"
 
 for d in data.find():
-    name = d.get('name')
-    if name:
-        count = rq.get_request_count_for_dataset(name)
-        child = {"name": name, "requests": count}
-        children.append(child)
+    t = d.get('title')
+    print d
+    print '\n\n'
+    # if t:
+    #     if not('ADM1' in t or 'ADM2' in t or 'ADM3' in t or 'ADM4' in t or 'ADM5' in t):
+    #         #print t[0:t.index('ADM1')]
+    #         print t
+    #     country = d.get('country')
+#     n = d.get('name')
+#     children = []
+#     if n:
+#         count = rq.get_request_count_for_dataset(n)
+#         if count != 0:
+#             child = {"name": n, "size": count}
+#             json_file['children'].append(child)
 
-print children
+# print json_file
+
+# with open('flare.json', 'w') as outfile:
+#     json.dump(json_file, outfile)
+
+# for k in children:
+#     print k['name']
 
 # for r in requests.find():
 #     ra = r['raster_data']
