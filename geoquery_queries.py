@@ -48,8 +48,7 @@ class GeoQueryRequests:
     def get_emails(self):
         """Get emails from requests.
         
-        Args:
-            requests: all requests from database.
+        Args: N/A
         Returns:
             list of emails - not guaranteed to be a unique list.
         """
@@ -64,7 +63,7 @@ class GeoQueryRequests:
         """Get emails from requests. 
         
         Args:
-            requests: all requests from database.
+            N/A
         Returns:
             list of unique users.
         """
@@ -79,7 +78,7 @@ class GeoQueryRequests:
         """Get total number of requests from the requests.
         
         Args:
-            requests: all requests from database.
+            N/A
         Returns:
             number of requests
         """
@@ -88,8 +87,8 @@ class GeoQueryRequests:
     def requests_per_user(self):
         """Get amount of requests submitted per user. 
         
-        Args:
-            requests: all requests from database.
+        Args: 
+            N/A
         Returns:
             count of requests per user
         """
@@ -104,8 +103,8 @@ class GeoQueryRequests:
     def selections_per_user_request(self):
         """Get amount of selected datasets per user. 
         
-        Args:
-            requests: all requests from database.
+        Args: 
+            N/A
         Returns:
             total selection made by each user
         """
@@ -121,7 +120,7 @@ class GeoQueryRequests:
         """Get organizations from the requests.
         
         Args:
-            requests: all requests from database.
+            N/A
         Returns:
             list of organizations
         """
@@ -138,8 +137,8 @@ class GeoQueryRequests:
     def get_requests(self):
         """Get requests from database.
         
-        Args:
-            requests: all requests from database.
+        Args: 
+            N/A
         Returns:
             list of requests
         """
@@ -148,8 +147,8 @@ class GeoQueryRequests:
     def get_boundary_count(self):
         """Get count of boundaries. 
         
-        Args:
-            requests: all requests from database.
+        Args: 
+            N/A
         Returns:
             boundaries are their frequency
         """
@@ -163,8 +162,8 @@ class GeoQueryRequests:
     def get_boundaries(self):
         """Get all boundaries from the requests.
         
-        Args:
-            requests: all requests from database.
+        Args: 
+            N/A
         Returns:
             list of boundaries
         """
@@ -177,7 +176,6 @@ class GeoQueryRequests:
         """Get request information for a boundary.
         
         Args:
-            requests: all requests from database.
             boundary: country/region
         Returns:
             list containing (# of times the boundary has been requested, map of {info requested about boundary, # of times this info was requested}).
@@ -200,6 +198,13 @@ class GeoQueryRequests:
         return ret
 
     def get_request_count_for_dataset(self, name):
+        """Get the amount of requests for a dataset across all boundaries.
+        
+        Args:
+            name: name of dataset
+        Returns:
+            count representing the amount of requests for the dataset
+        """
         count = 0
         for request in self.requests.find():
             raster_data = request['raster_data']
