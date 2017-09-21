@@ -9,8 +9,11 @@ from geotext import GeoText
 import geograpy
 import unicodedata
 
+from collections import defaultdict
+from collections import Counter
 from pymongo import MongoClient
 from geoquery_queries import GeoQueryRequests
+from copy import deepcopy
 
 try:
     client = MongoClient('localhost', 27017)
@@ -33,81 +36,26 @@ with open('countries.json') as data_file:
 countries_with_datasets = {}
 
 for request in requests.find():
-    countries = set()
-    for v in country_list.values():
-        for boundary in request['boundary'].values():
-            if v in boundary:
-                countries_with_datasets[v] = {}
-                countries.add(v)
-
     raster_data = request['raster_data']
     if raster_data:
         for r in raster_data:
             name = r['name'] # name of dataset
-            for country in countries:
-                countries_with_datasets[country][name] = countries_with_datasets[country].get(name, 0) + 1
-                child = {"name": name, "size": 1}
-                combo = {'name': country, 'children': [{'name': name}]}
-                json_file['children'].append(combo)
-                #json_file['children'].append(child)
 
-    countries_with_datasets[country][name] = countries_with_datasets[country].get(name, 0) + 1
-    child = {"name": name, "size": 1}
-    combo = {'name': country, 'children': [{'name': name}]}
-    json_file['children'].append(combo)
+            for v in country_list.values():
+                for boundary in request['boundary'].values(): # search for matching country names
+                    if v in boundary:
+                        if not v in countries_with_datasets:
+                            countries_with_datasets[v] = {}
+                        countries_with_datasets[v][name] = countries_with_datasets[v].get(name, 0) + 1
 
-with open('data.txt', 'w') as outfile:
-    json.dump(countries_with_datasets, outfile)
+for c, d in countries_with_datasets.items():
+    print countries_with_datasets[c]
+    countries_with_datasets[c] = [{'name': k, 'size': v} for k, v in d.iteritems()]
+    print countries_with_datasets[c]
+    raw_input()
 
-    #print countries
-
-# for r in requests.find():
-#     # t = GeoText(str(r['boundary']))
-#     t = geograpy.get_place_context(text=str(r['boundary']))
-#     countries = t.countries
-#     if countries:
-#         pass#print countries
-#     else:
-#         if len(t.other) == 0 and len(t.regions) == 0:
-#             print r['boundary']
-        #print t.other
-    # if not countries:
-    #     print r['boundary']
-    #     print countries
-    # print countries
-    # if len(countries) > 1:
-    #     print r
-#     t = GeoText(str(r))
-#     countries = t.country_mentions
-#     if len(countries) > 1:
-#         print countries
-#         print r
-#     raw_input()
-
-# for d in data.find():
-#     t = GeoText(str(d))
-#     countries = t.country_mentions
-#     if len(countries) > 1:
-#         print countries
-#         print d
-#     # for x in t.country_mentions:
-#     #     print x
-#     # print '\n\n'
-#     raw_input()
-    # if t:
-    #     if not('ADM1' in t or 'ADM2' in t or 'ADM3' in t or 'ADM4' in t or 'ADM5' in t):
-    #         #print t[0:t.index('ADM1')]
-    #         print t
-    #     country = d.get('country')
-    #n = d.get('name')
-    # children = []
-    # if n:
-    #     count = rq.get_request_count_for_dataset(n)
-    #     if count != 0:
-            # child = {"name": n, "size": count}
-            # json_file['children'].append(child)
-
-# print json_file
+for c, d in countries_with_datasets.iteritems():
+    json_file['children'].append({'name': c, 'children': d})
 
 with open('flare.json', 'w') as outfile:
     json.dump(json_file, outfile)
